@@ -1,7 +1,7 @@
-package com.example.config
+package com.teya.config
 
-import com.example.di.appModule
-import com.example.routes.helloRoutes
+import com.teya.di.appModule
+import com.teya.routes.helloRoutes
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*

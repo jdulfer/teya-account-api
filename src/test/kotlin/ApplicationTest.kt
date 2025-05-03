@@ -1,5 +1,6 @@
-package com.example
+package com.teya
 
+import com.teya.e2e.utils.configureTestApplication
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
@@ -10,10 +11,8 @@ class ApplicationTest {
 
     @Test
     fun testRoot() = testApplication {
-        application {
-            module()
-        }
-        client.get("/").apply {
+        configureTestApplication()
+        client.get("/hello").apply {
             assertEquals(HttpStatusCode.OK, status)
         }
     }

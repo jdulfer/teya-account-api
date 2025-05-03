@@ -1,1 +1,1 @@
-rootProject.name = "JamesTeyaChallenge"
+rootProject.name = "AccountAPI"
