@@ -6,8 +6,8 @@ data class Transaction(
     val transactionId: String,
     val transactionType: TransactionType,
     val amount: BigDecimal,
-    val senderAccountId: String,
-    val receiverAccountId: String,
+    val accountId: String,
+    val counterpartyId: String,
 ) {
     enum class TransactionType {
         INCOMING, OUTGOING

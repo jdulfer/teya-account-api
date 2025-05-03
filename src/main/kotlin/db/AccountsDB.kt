@@ -3,7 +3,11 @@ package com.teya.db
 import com.teya.domain.Account
 import java.math.BigDecimal
 
-fun getAccounts(): List<Account> = listOf(
+class AccountsDB {
+    val accounts = getAccounts()
+}
+
+fun getAccounts() = mutableListOf(
     Account(
         accountId = "1",
         accountName = "Kaladin",
@@ -21,8 +25,8 @@ fun getAccounts(): List<Account> = listOf(
     ),
     Account(
         accountId = "4",
-        accountName = "Taravangian",
-        balance = BigDecimal("8753")
+        accountName = "Shallan",
+        balance = BigDecimal("1")
     ),
     Account(
         accountId = "5",

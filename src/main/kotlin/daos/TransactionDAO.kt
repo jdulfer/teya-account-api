@@ -4,7 +4,7 @@ import com.teya.domain.Transaction
 import java.math.BigDecimal
 
 interface TransactionDAO {
-    fun getTransactions(accountId: String): List<Transaction>
-    fun moveMoney(senderAccountId: String, receiverAccountId: String, amount: BigDecimal): List<Transaction>
-    fun reverseTransactions(transactions: List<Transaction>): List<Transaction>
+    suspend fun getTransactions(accountId: String): List<Transaction>
+    suspend fun moveMoney(senderAccountId: String, receiverAccountId: String, amount: BigDecimal): List<Transaction>
+    suspend fun reverseTransactions(transactions: List<Transaction>): List<Transaction>
 }

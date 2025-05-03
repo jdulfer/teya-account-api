@@ -13,9 +13,9 @@ class AccountService(private val accountDAO: AccountDAO, private val transaction
         return account.balance.setScale(2)
     }
 
-    fun getAccountHistory(accountId: String): List<Transaction> = transactionDAO.getTransactions(accountId)
+    suspend fun getAccountHistory(accountId: String): List<Transaction> = transactionDAO.getTransactions(accountId)
 
-    fun moveMoney(senderAccountId: String, receiverAccountId: String, amount: BigDecimal) {
+    suspend fun moveMoney(senderAccountId: String, receiverAccountId: String, amount: BigDecimal) {
         // check if there is an appropriate amount of money in the senders account
         val senderAccount = accountDAO.getAccount(senderAccountId)
         val receiverAccount = accountDAO.getAccount(receiverAccountId)
@@ -29,9 +29,9 @@ class AccountService(private val accountDAO: AccountDAO, private val transaction
 
         // change the balances of the sender and receiver accounts
         try {
-            val senderTransaction = createdTransactions.find { it.receiverAccountId == senderAccountId }
+            val senderTransaction = createdTransactions.find { it.accountId == senderAccountId }
                 ?: throw Exception("Transaction failed")
-            val receiverTransaction = createdTransactions.find { it.receiverAccountId == receiverAccountId }
+            val receiverTransaction = createdTransactions.find { it.accountId == receiverAccountId }
                 ?: throw Exception("Transaction failed")
             changeAccountBalance(senderAccount, senderTransaction)
             changeAccountBalance(receiverAccount, receiverTransaction)
