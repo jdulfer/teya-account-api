@@ -1,6 +1,7 @@
 package com.teya.config
 
 import com.teya.di.appModule
+import com.teya.routes.accountRoutes
 import com.teya.routes.helloRoutes
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -25,5 +26,6 @@ fun Application.module() {
 
     routing {
         helloRoutes()
+        accountRoutes()
     }
 }
