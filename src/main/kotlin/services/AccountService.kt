@@ -16,48 +16,49 @@ class AccountService(private val accountDAO: AccountDAO, private val transaction
     suspend fun getAccountHistory(accountId: String): List<Transaction> = transactionDAO.getTransactions(accountId)
 
     suspend fun moveMoney(senderAccountId: String, receiverAccountId: String, amount: BigDecimal) {
-        // check if there is an appropriate amount of money in the senders account
         val senderAccount = accountDAO.getAccount(senderAccountId)
         val receiverAccount = accountDAO.getAccount(receiverAccountId)
         if (senderAccount.balance < amount) {
             throw Exception("Insufficient funds in sender account")
         }
 
-        // create the transaction
-        // TODO :: Might need to specifically handle transactional error
         val createdTransactions = transactionDAO.moveMoney(senderAccountId, receiverAccountId, amount)
 
-        // change the balances of the sender and receiver accounts
         try {
             val senderTransaction = createdTransactions.find { it.accountId == senderAccountId }
                 ?: throw Exception("Transaction failed")
             val receiverTransaction = createdTransactions.find { it.accountId == receiverAccountId }
                 ?: throw Exception("Transaction failed")
-            changeAccountBalance(senderAccount, senderTransaction)
-            changeAccountBalance(receiverAccount, receiverTransaction)
+
+            changeAccountBalances(
+                listOf(
+                    senderAccount to senderTransaction,
+                    receiverAccount to receiverTransaction
+                )
+            )
+
         } catch (e: Exception) {
             transactionDAO.reverseTransactions(createdTransactions)
             throw e
         }
     }
 
-    private fun changeAccountBalance(
-        account: Account,
-        transaction: Transaction,
-    ) {
-        when (transaction.transactionType) {
-            Transaction.TransactionType.INCOMING -> {
-                account.balance += transaction.amount
-            }
+    private fun changeAccountBalances(balanceUpdates: List<Pair<Account, Transaction>>) {
+        balanceUpdates.map { (account, transaction) ->
+            when (transaction.transactionType) {
+                Transaction.TransactionType.INCOMING -> {
+                    account.accountId to transaction.amount
+                }
 
-            Transaction.TransactionType.OUTGOING -> {
-                account.balance -= transaction.amount
-            }
+                Transaction.TransactionType.OUTGOING -> {
+                    account.accountId to transaction.amount.negate()
+                }
 
-            else -> {
-                throw Exception("Invalid transaction type")
+                else -> {
+                    throw Exception("Invalid transaction type")
+                }
             }
-        }
+        }.let { accountDAO.changeAccountBalances(it) }
     }
 
 }
