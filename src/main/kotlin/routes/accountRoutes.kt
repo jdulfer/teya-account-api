@@ -1,5 +1,6 @@
 package com.teya.routes
 
+import com.teya.domain.Transaction
 import com.teya.domain.Transaction.TransactionType
 import com.teya.services.AccountService
 import io.ktor.http.*
@@ -30,7 +31,8 @@ fun Routing.accountRoutes() {
                     transactionType = transaction.transactionType,
                     amount = transaction.amount.setScale(2).toPlainString(),
                     accountId = transaction.accountId,
-                    counterpartyId = transaction.counterpartyId
+                    counterpartyId = transaction.counterpartyId,
+                    status = transaction.status
                 )
             })
         }
@@ -64,4 +66,5 @@ data class TransactionResponse(
     val amount: String,
     val accountId: String,
     val counterpartyId: String,
+    val status: Transaction.TransactionStatus
 )

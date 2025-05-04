@@ -43,8 +43,23 @@ class HttpTransactionDAO(private val engine: HttpClientEngine) : TransactionDAO 
     }
 
     override suspend fun reverseTransactions(transactions: List<Transaction>): List<Transaction> {
-        TODO("Not yet implemented")
+        val client = TeyaClientFactory.createClient(engine)
+        val response = client.post("http://localhost:8081") {
+            url {
+                path("transactions", "reverse")
+            }
+            contentType(ContentType.Application.Json)
+            setBody(transactions.map { ReversalPayload(it.transactionId) })
+        }
+
+        val reversedTransactionsDTO: List<TransactionDTO> = response.body()
+        return reversedTransactionsDTO.map { it.toDomain() }
     }
+
+    @Serializable
+    data class ReversalPayload(
+        val transactionId: String
+    )
 
     @Serializable
     data class MoveMoneyPayload(
@@ -60,13 +75,15 @@ class HttpTransactionDAO(private val engine: HttpClientEngine) : TransactionDAO 
         val amount: String,
         val accountId: String,
         val counterpartyId: String,
+        val status: Transaction.TransactionStatus
     ) {
         fun toDomain() = Transaction(
             transactionId = transactionId,
             transactionType = transactionType,
             amount = BigDecimal(amount).setScale(2),
             accountId = accountId,
-            counterpartyId = counterpartyId
+            counterpartyId = counterpartyId,
+            status = status
         )
     }
 }
