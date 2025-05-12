@@ -40,10 +40,16 @@ fun Routing.accountRoutes() {
         post("/move-money") {
             val accountId = call.parameters["accountId"] ?: throw NotFoundException("Please provide an account id")
             val payload = call.receive<MoveMoneyPayload>()
+            val amount = BigDecimal(payload.amount)
+
+            if (amount <= BigDecimal.ZERO) {
+                throw IllegalArgumentException("Amount must be greater than 0")
+            }
+
             accountService.moveMoney(
                 accountId,
                 payload.receiverAccountId,
-                BigDecimal(payload.amount)
+                amount
             )
             call.respond(HttpStatusCode.Created)
         }
@@ -53,7 +59,7 @@ fun Routing.accountRoutes() {
 @Serializable
 data class MoveMoneyPayload(
     val receiverAccountId: String,
-    val amount: String
+    val amount: String // the value that must be pos
 )
 
 @Serializable
